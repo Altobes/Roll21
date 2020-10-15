@@ -10,3 +10,21 @@ body {
 .page-container {
     margin-top: 75px;
 }
+
+/*CSS For Login */
+#loginContainer {
+    margin-top: 25%;
+    margin-left:0px;
+}
+
+#header {
+    align-content: left;
+}
+
+#inputContainer {
+    width: 75%;
+}
+
+
+
+/* End Login */ 

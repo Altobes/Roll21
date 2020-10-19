@@ -34,8 +34,6 @@ body {
 
 
 
-
-
 /* End Login */ 
 @media  (max-width:400px) {
     #header {
@@ -43,3 +41,60 @@ body {
     }
 }
 
+
+/*CSS For Map*/
+
+.column {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    margin: 0;
+}
+
+#map {
+    margin-left: -5vw;
+    display: grid;
+    /*justify-content: center;*/
+   
+    grid-template-rows: 10%;
+    width: 80vw;
+    height: 80vh;
+    gap:0px;
+    overflow:scroll;
+
+    grid-template-areas: 
+    ".........."
+    ".........."
+    ".........."
+    ".........."
+    ".........."
+    ".........."
+    ".........."
+    ".........."
+    ".........."
+    ".........."
+    "..........";
+    
+}
+
+.square {
+    display: inline;
+    background-color: white;
+    border: 2px solid black;
+    width: 10%;
+    height: 10px;
+    margin: 0px;
+}
+
+/*
+@media (min-width: 1000px) {
+    #map {
+        width:1000px;
+        height: 1000px;
+    }
+} */

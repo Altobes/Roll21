@@ -12,43 +12,66 @@
 
 <!-- Temporary style tag until we figure out how we want to handle css files in github. TODO: remove -->
 <style>
-  ul {
+  .nav-list {
     list-style-type: none;
     margin: 0;
     padding: 0;
     overflow: hidden;
     background-color: #333;
   }
-  li {
-    float: left;
-    border-right: 1px solid #eee;
-    margin-right: -1px;
-  }
-  li:last-child {
-    border-right: none;
-    margin-right: 0px;
-  }
-  li a {
+  .nav-button {
     display: block;
     color: white;
     text-align: center;
     padding: 30px 0px;
     text-decoration: none;
     width: 20vw;
+    float: left;
+    border-right: 1px solid #eee;
   }
-
+  #chat-button {
+    border-right: 0px;
+  }
+  #options {
+    margin-top: 50px;
+  }
+  .list-group-item {
+    margin-left: auto;
+    margin-right: auto;
+    border-width: 1px;
+    width: 300px;
+    height: 100px;
+    justify-content: center;
+  }
+  #logout-button {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 250px;
+    height: 50px; 
+    width: 150px;
+  }
 </style>
 
 <body>
   <nav class="navbar navbar-dark fixed-top">
     <a class="navbar-brand" href="#">Roll21</a>
   </nav>
-  <ul class="fixed-bottom">
-    <li><a href="#">Back</a></li>
-    <li><a href="#">Home</a></li>
-    <li><a href="#game">Game</a></li>
-    <li><a href="#social">Social</a></li>
-    <li><a href="#chat">Chat</a></li>
+
+  <ul class="list-group" id="options">
+    <li class="list-group-item">Friends</li>
+    <li class="list-group-item">Campaigns</li>
+    <li class="list-group-item">Current Game</li>
+    <li class="list-group-item">Settings</li>
+    <button class="btn btn-outline-danger" id="logout-button">Log Out</button>
+  </ul>
+  
+
+  <ul class="fixed-bottom nav-list">
+    <li><a href="#" class="nav-button">Back</a></li>
+    <li><a href="#" class="nav-button">Home</a></li>
+    <li><a href="#game" class="nav-button">Game</a></li>
+    <li><a href="#social" class="nav-button">Social</a></li>
+    <li><a href="#chat" class="nav-button" id="chat-button">Chat</a></li>
   </ul>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>

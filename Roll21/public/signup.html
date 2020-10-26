@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
-  <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.css" />
   <link rel="stylesheet" href="styles/main.css">
   <title>Roll 21</title>
 </head>
@@ -15,9 +14,9 @@
   <nav class="navbar navbar-dark fixed-top">
     <a class="navbar-brand" href="#">Roll 21</a>
   </nav>
-  <div id="mainPage" class="container page-container">
+  <div id="signUpPage" class="container page-container">
     <div id="loginContainer">
-      <h1 id="header">Sign in to Roll 21</h1>
+      <h1 id="header">Create Roll 21 Account</h1>
       <div id="inputContainer">
         <div class="form-group bmd-form-group">
           <label for="inputUser" class="bmd-label-floating">Username</label>
@@ -25,17 +24,16 @@
         </div>
         <div class="form-group bmd-form-group"> 
           <label for="inputPass" class="bmd-label-floating">Password</label>
-          <input type="text" class="form-control" id="inputPass">
+          <input type="text" class="form-control" id="inputPassword">
         </div>
       </div>
     </div>
     <div id="loginButtons">
-      <div class="btn">Don't have an account?</div>
+      <div id="account" class="btn">Already have an account?</div>
       <div>
-        <div id="logIn" class="btn">SIGN IN</div>
+        <div id="signUp" class="btn">SIGN UP</div>
       </div>
     </div>
-    <div id="firebaseui-auth-container"></div>
   </div>
 
   <script src="scripts/jquery.min.js"></script>
@@ -47,7 +45,6 @@
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>
   <script src="/__/firebase/7.18.0/firebase-firestore.js"></script>
   <script src="/__/firebase/init.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/ui/4.6.1/firebase-ui-auth.js"></script>
   <script src="scripts/main.js"></script>
 </body>
 

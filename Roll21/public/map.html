@@ -14,8 +14,8 @@
   <nav class="navbar navbar-dark fixed-top">
     <a class="navbar-brand" href="#">Roll21</a>
   </nav>
-  <div id="mainPage" class="container page-container">
-    <div>
+  <div id="mapPage" class="container page-container">
+    <div class="main-grid">
       <div id="map" class="flex-container">
         <div class="column flex-column">
           <div class="row flex-row">
@@ -61,7 +61,7 @@
         </div>
         <div class="column flex-column">
           <div class="row flex-row">
-            <div class="square"></div>
+            <div class="square"><img src=""></div>
             <div class="square"></div>
             <div class="square"></div>
             <div class="square"></div>
@@ -159,12 +159,15 @@
         </div>
         
       </div>
+      <div id="chat">
+        <textarea readonly id="chatBox" name="Chat">
+          At w3schools.com you will learn how to make a website. They offer free tutorials in all web development technologies.
+        </textarea>
+        <textarea id="typeBox">
+
+        </textarea>
+      </div>       
     </div>
-    <div id="chat">
-
-    </div>
-
-
   </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>

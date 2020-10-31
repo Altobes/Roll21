@@ -42,7 +42,9 @@ rhit.FbAuthManager = class {
 		});
 	}
 	signIn() {
-		firebase.auth().signInWithEmailAndPassword(inputEmailEl, inputPasswordEl).then(function () {
+		const inputEmailEl = document.querySelector("#inputUser").valuel;
+		const inputPasswordEl = document.querySelector("#inputPassword").value;
+		firebase.auth().signInWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then(function () {
 			window.location.href = `/home.html`;
 		}).catch = (error) => {
 			var errorCode = error.code;
@@ -105,6 +107,19 @@ rhit.MapPageController = class {
 
 	chat() {
 		const text = document.querySelector("#textBox").value;
+		db.collection("Chats").add({
+			Message: text,
+			Timestamp: new Date(),
+			UserID: fbAuthManager._user
+		})
+		.then(function(docRef) {
+			console.log("Chat sent succesfully");
+			let box = document.querySelector("#chatBox");
+			box.value = box.value + "/n" + text;
+		})
+		.catch(function(error) {
+			console.error("Error adding document: ", error);
+		});
 	}
 }
 

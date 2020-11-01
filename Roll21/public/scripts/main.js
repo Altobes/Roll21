@@ -107,7 +107,7 @@ rhit.MapPageController = class {
 
 	chat() {
 		const text = document.querySelector("#textBox").value;
-		db.collection("Chats").add({
+		db.collection("Campaigns").doc("Chat_Histry").collection("Chats").doc(chat).add({
 			Message: text,
 			Timestamp: new Date(),
 			UserID: fbAuthManager._user
@@ -120,6 +120,78 @@ rhit.MapPageController = class {
 		.catch(function(error) {
 			console.error("Error adding document: ", error);
 		});
+	}
+}
+
+rhit.Chat = class {
+	constructor(uid, text) {
+		this.sender = uid;
+		this.chat = text;
+	}
+}
+
+rhit.FbChatManager = class {
+	constructor() {
+		console.log("You created ChatManager");
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection(rhit.FB_CHAT_COLLECTION);
+		this._unsubscribe = null;
+	}
+	add(uid, text) {
+		//console.log(url + " " + title);
+		this._ref.add({
+			[rhit.FB_UID]: url,
+			[rhit.FB_CHAT]: title,
+			[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now()
+		}) 
+		.then(function (docRef) {
+			console.log("Document written with ID: ", docRef.id);
+		})
+		.catch(function (error) {
+			console.log("Error adding document: ", error);
+		})
+	}
+	beginListening(changeListender) {
+		this._unsubscribe = this._ref
+			.orderBy(rhit.FB_KEY_LAST_TOUCHED, "desc")
+			.limit(50)
+			.onSnapshot((querySnapshot) => {
+			console.log("chat update");
+			this._documentSnapshots = querySnapshot.docs;
+			changeListender();
+		});
+	}
+	stopListening() {
+		this._unsubscribe ();
+	}
+	get length() {
+		return this._documentSnapshots.length;
+	}
+	getChatAtIndex(index) {
+		const docSnapShot = this._documentSnapshots[index];
+		const ch = new rhit.Chat(
+			docSnapShot.sender, 
+			docSnapShot.get(rhit.CHAT), 
+		);
+		return ch;
+	}
+}
+
+rhit.HomePageController = class {
+	constructor() {
+		document.querySelector("#friends").addEventListener = (event) => {
+		
+		};
+		document.querySelector("#campaigns").addEventListener = (event) => {
+		
+		};
+		document.querySelector("#game").addEventListener = (event) => {
+		
+		};
+		document.querySelector("#settings").addEventListener = (event) => {
+		
+		};
+
 	}
 }
 

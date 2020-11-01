@@ -42,11 +42,15 @@ rhit.FbAuthManager = class {
 		});
 	}
 	signIn() {
-		firebase.auth().signInWithEmailAndPassword(inputEmailEl.value, inputPasswordEl.value).catch = (error) => {
+		const inputEmailEl = document.querySelector("#inputUser").valuel;
+		const inputPasswordEl = document.querySelector("#inputPassword").value;
+		firebase.auth().signInWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then(function () {
+			window.location.href = `/home.html`;
+		}).catch = (error) => {
 			var errorCode = error.code;
 			var errorMessage = error.messgage;
 			console.log("sign in error", errorCode, errorMessage);
-		}		  
+		}
 	}
 	signOut() {
 		firebase.auth().signOut().then(function () {
@@ -56,11 +60,13 @@ rhit.FbAuthManager = class {
 		});
 	}
 	createAccount(inputEmailEl, inputPasswordEl) {
-		firebase.auth().createUserWithEmailAndPassword(inputEmailEl.value + "@shmee.edu", inputPasswordEl.value).catch = (error) => {
+		firebase.auth().createUserWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then(function () {
+			window.location.href = `/home.html`;
+		}).catch = (error) => {
 			var errorCode = error.code;
 			var errorMessage = error.messgage;
-			console.log("sign in error", errorCode, errorMessage);
-		}		  
+			console.log("creation error", errorCode, errorMessage);
+		}
 	}
 	get isSigndIn() {
 		return !!this._user
@@ -75,7 +81,7 @@ rhit.SignUpPageController = class {
 		document.querySelector("#signUp").onclick = (event) => {
 			const inputEmailEl = document.querySelector("#inputUser")
 			const inputPasswordEl = document.querySelector("#inputPassword");
-			rhit.fbAuthManager.createAccount(inputEmailEl, inputPasswordEl);
+			rhit.fbAuthManager.createAccount(inputEmailEl.value, inputPasswordEl.value);
 		};
 
 		document.querySelector("#account").onclick = (event) => {
@@ -92,15 +98,27 @@ rhit.MapPageController = class {
 			rhit.fbAuthManager.createAccount(inputEmailEl, inputPasswordEl);
 		};
 
-		$(function() {
-			$("#textBox").keypress(function (e) {
-				if(e.which == 13) {
-					//submit form via ajax, this is not JS but server side scripting so not showing here
-					$("#chatBox").append($(this).val() + "<br/>");
-					$(this).val("");
-					e.preventDefault();
-				}
-			});
+		document.querySelector("#textBox").keypress(function (e) {
+			if(e.which == 13) {
+				this.chat();
+			}	
+		});
+	}
+
+	chat() {
+		const text = document.querySelector("#textBox").value;
+		db.collection("Chats").add({
+			Message: text,
+			Timestamp: new Date(),
+			UserID: fbAuthManager._user
+		})
+		.then(function(docRef) {
+			console.log("Chat sent succesfully");
+			let box = document.querySelector("#chatBox");
+			box.value = box.value + "/n" + text;
+		})
+		.catch(function(error) {
+			console.error("Error adding document: ", error);
 		});
 	}
 }

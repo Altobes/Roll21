@@ -12,6 +12,13 @@ var rhit = rhit || {};
 /** globals */
 rhit.fbAuthManager = null;
 
+function htmlToElement(html) {
+	var template = document.createElement("template");
+	html = html.trim();
+	template.innerHTML = html;
+	return template.content.firstChild;
+}
+
 rhit.LoginPageController = class {
 	constructor() {
 		document.querySelector("#logIn").onclick = (event) => {
@@ -91,19 +98,71 @@ rhit.SignUpPageController = class {
 }
 
 rhit.MapPageController = class {
+
+	_createRow(num) {
+		//return htmlToElement(`<div ondrop="drop(event)" ondragover="allowDrop(event)" class="square" ><img class="aBox" draggable="true" ondragstart="drag(event)"></div>`);
+		return htmlToElement(`<div class="square" ><img id="${num}" class="aBox" draggable="true" ondragstart="event.dataTransfer.setData('text',src)"></div>`);
+	}
+
 	constructor() {
+		let rows = document.querySelectorAll(".row");
+		let newRows = new Array(10);
+		let total = 0;
+		for(let i=0; i<10;i++){
+			newRows[i] = new Array(10);
+			for(let k=0; k<10;k++){
+				newRows[i][k] = this._createRow(total);
+				total++;
+			}
+		}
+		let g = 0;
+		rows.forEach(row => {
+			for (let j = 0;j < 10;j++) {
+				row.appendChild(newRows[g][j]);
+			}
+			g++;
+		});
+
+		//Source: https://developer.mozilla.org/en-US/docs/Web/API/Document/drag_event
+		var dragged;
+
+		document.addEventListener("dragstart", function(event) {
+			dragged = event.target;
+		})
+
+		document.addEventListener("dragover", function(event) {
+			// prevent default to allow drop
+			event.preventDefault();
+		  }, false);
+
+		document.addEventListener("drop", function(event) {
+			// prevent default action (open as link for some elements)
+			event.preventDefault();
+			
+			if (event.target.className == "aBox" && dragged.src.length > 0) {
+				event.target.src = dragged.src;
+				dragged.src = "";
+			}
+		}, false);
+
+
 		document.querySelector("#textBox").addEventListener = (event) => {
-			const inputEmailEl = document.querySelector("#inputUser")
-			const inputPasswordEl = document.querySelector("#inputPassword");
-			rhit.fbAuthManager.createAccount(inputEmailEl, inputPasswordEl);
+			
+		};
+		document.querySelector("#sendButton").onclick = (event) => {
+			this.chat();
 		};
 
-		document.querySelector("#textBox").keypress(function (e) {
-			if(e.which == 13) {
-				this.chat();
-			}	
-		});
+		//Testing Code
+		document.getElementById(10).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU";
+		document.getElementById(18).src = "https://wiki.teamfortress.com/w/images/thumb/d/d8/Engineer.png/375px-Engineer.png";
+		document.getElementById(56).src = "https://img.favpng.com/15/24/12/team-fortress-2-engineering-taunting-science-png-favpng-3g9hvBzWy43XBAa9RWPJGGMpj.jpg";
+		document.getElementById(70).src = "https://i.redd.it/i51xeosj0bc31.png";
+		
+		//dragElement(document.querySelectorAll(".columns"));	
 	}
+
+	
 
 	chat() {
 		const text = document.querySelector("#textBox").value;
@@ -130,11 +189,11 @@ rhit.Chat = class {
 	}
 }
 
-rhit.FbChatManager = class {
+rhit.FbChatManager = class { /*
 	constructor() {
 		console.log("You created ChatManager");
 		this._documentSnapshots = [];
-		this._ref = firebase.firestore().collection(rhit.FB_CHAT_COLLECTION);
+		this._ref = null;//firebase.firestore().collection(rhit.FB_CHAT_COLLECTION);
 		this._unsubscribe = null;
 	}
 	add(uid, text) {
@@ -174,8 +233,8 @@ rhit.FbChatManager = class {
 			docSnapShot.get(rhit.CHAT), 
 		);
 		return ch;
-	}
-}
+	} */
+} 
 
 rhit.HomePageController = class {
 	constructor() {
@@ -185,8 +244,8 @@ rhit.HomePageController = class {
 		document.querySelector("#campaigns").addEventListener = (event) => {
 		
 		};
-		document.querySelector("#game").addEventListener = (event) => {
-		
+		document.querySelector("#game").onclick = (event) => {
+			window.location.href = `/map.html?`;
 		};
 		document.querySelector("#settings").addEventListener = (event) => {
 		
@@ -217,8 +276,12 @@ rhit.main = function () {
 
 	if(document.querySelector("#mapPage")) {
 		console.log("You are on the map page.")
-		
 		new rhit.MapPageController();
+	}
+
+	if(document.querySelector("#homePage")) {
+		console.log("You are on the map page.")
+		new rhit.HomePageController();
 	}
 	
 };

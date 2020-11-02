@@ -24,9 +24,15 @@ rhit.LoginPageController = class {
 		document.querySelector("#logIn").onclick = (event) => {
 			rhit.fbAuthManager.signIn();
 		};
-
-		document.querySelector("#noAccount").onclick = (event) => {
-			window.location.href = `/signup.html?`;
+		document.querySelector("#signUp").onclick = (event) => {
+			const inputEmailEl = document.querySelector("#createUser")
+			const inputPasswordEl = document.querySelector("#createPassword");
+			const inputPasswordElv = document.querySelector("#verifyPassword");
+			if (inputEmailEl.value != inputPasswordElv.value) {
+				console.error("Passwords do not match");
+				return;
+			}
+			rhit.fbAuthManager.createAccount(inputEmailEl.value, inputPasswordEl.value);
 		};
 	}
 }
@@ -75,6 +81,9 @@ rhit.FbAuthManager = class {
 			console.log("creation error", errorCode, errorMessage);
 		}
 	}
+	
+
+
 	get isSigndIn() {
 		return !!this._user
 	}
@@ -85,11 +94,7 @@ rhit.FbAuthManager = class {
 
 rhit.SignUpPageController = class {
 	constructor() {
-		document.querySelector("#signUp").onclick = (event) => {
-			const inputEmailEl = document.querySelector("#inputUser")
-			const inputPasswordEl = document.querySelector("#inputPassword");
-			rhit.fbAuthManager.createAccount(inputEmailEl.value, inputPasswordEl.value);
-		};
+		
 
 		document.querySelector("#account").onclick = (event) => {
 			window.location.href = `/index.html?`;

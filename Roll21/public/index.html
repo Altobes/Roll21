@@ -11,7 +11,7 @@
   <title>Roll 21</title>
 </head>
 
-<body>
+<body id="loginPage">
   <nav class="navbar navbar-dark fixed-top">
     <a class="navbar-brand" href="#">Roll 21</a>
   </nav>
@@ -20,12 +20,12 @@
     <div class="left">
       <h1>Sign up</h1>
       
-      <input type="text" name="username" placeholder="Username"/>
+      <input id="createUser" type="text" name="username" placeholder="Username"/>
       <!--<input type="text" name="email" placeholder="E-mail"/>-->
-      <input type="password" name="password" placeholder="Password"/>
-      <input type="password" name="password2" placeholder="Retype password"/>
+      <input id="createPassword" type="password" name="password" placeholder="Password"/>
+      <input id="verifyPassword" type="password" name="password2" placeholder="Retype password"/>
       
-      <input type="submit" name="signup_submit" value="Sign me up"/>
+      <input id="signUp" type="submit" name="signup_submit" value="Sign me up"/>
     </div>
     
     <div class="right">
@@ -40,9 +40,9 @@
   </div>
   <div id="login-box">
     <h1>Log in</h1>
-    <input type="text" name="username" placeholder="Username"/>
-    <input type="password" name="password" placeholder="Password"/>
-    <input type="submit" name="signup_submit" value="Log in"/>
+    <input id="inputUser" type="text" name="username" placeholder="Username"/>
+    <input id="inputPassword" type="password" name="password" placeholder="Password"/>
+    <input id="logIn" type="submit" name="signup_submit" value="Log in"/>
   </div>
 
   <script src="scripts/jquery.min.js"></script>

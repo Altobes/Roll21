@@ -28,7 +28,7 @@ rhit.LoginPageController = class {
 			const inputEmailEl = document.querySelector("#createUser")
 			const inputPasswordEl = document.querySelector("#createPassword");
 			const inputPasswordElv = document.querySelector("#verifyPassword");
-			if (inputEmailEl.value != inputPasswordElv.value) {
+			if (inputPasswordEl.value != inputPasswordElv.value) {
 				console.error("Passwords do not match");
 				return;
 			}
@@ -55,7 +55,7 @@ rhit.FbAuthManager = class {
 		});
 	}
 	signIn() {
-		const inputEmailEl = document.querySelector("#inputUser").valuel;
+		const inputEmailEl = document.querySelector("#inputUser").value;
 		const inputPasswordEl = document.querySelector("#inputPassword").value;
 		firebase.auth().signInWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then(function () {
 			window.location.href = `/home.html`;
@@ -106,7 +106,7 @@ rhit.MapPageController = class {
 
 	_createRow(num) {
 		//return htmlToElement(`<div ondrop="drop(event)" ondragover="allowDrop(event)" class="square" ><img class="aBox" draggable="true" ondragstart="drag(event)"></div>`);
-		return htmlToElement(`<div class="square" ><img id="${num}" class="aBox" draggable="true" ondragstart="event.dataTransfer.setData('text',src)"></div>`);
+		return htmlToElement(`<div class="square" ><img alt="&nbsp;" id="${num}" class="aBox" draggable="true" ondragstart="event.dataTransfer.setData('text',src)" onerror='this.style.display = "none"' style="display: none" onload="this.style.display=''"></div>`);
 	}
 
 	constructor() {
@@ -133,19 +133,26 @@ rhit.MapPageController = class {
 
 		document.addEventListener("dragstart", function(event) {
 			dragged = event.target;
+			console.log("DragStart");
 		})
 
 		document.addEventListener("dragover", function(event) {
 			// prevent default to allow drop
 			event.preventDefault();
+			console.log("PreventDefault");
 		  }, false);
 
 		document.addEventListener("drop", function(event) {
 			// prevent default action (open as link for some elements)
 			event.preventDefault();
-			
-			if (event.target.className == "aBox" && dragged.src.length > 0) {
-				event.target.src = dragged.src;
+			console.log(event.target.tagName);
+			let image = event.target;
+			if (image.tagName == "DIV") {
+				image = image.querySelector("img");
+			}
+			if (image.tagName == "IMG" && image.className == "aBox" && dragged.src.length > 0) {
+				console.log("Drop");
+				image.src = dragged.src;
 				dragged.src = "";
 			}
 		}, false);
@@ -157,6 +164,8 @@ rhit.MapPageController = class {
 		document.querySelector("#sendButton").onclick = (event) => {
 			this.chat();
 		};
+
+		
 
 		//Testing Code
 		document.getElementById(10).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU";

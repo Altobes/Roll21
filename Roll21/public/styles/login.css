@@ -20,7 +20,7 @@ body {
 
 #signup-box {
   position: relative;
-  margin: 5% auto;
+  margin: 5% auto 1% auto;
   width: 600px;
   height: 400px;
   background: #FFF;
@@ -30,7 +30,8 @@ body {
 #login-box {
   visibility: visible; /* start as hidden, on button press, change to visible */
   position: relative;
-  margin: 5% auto;
+  margin: 1% auto;
+  margin-top: 0;
   width: 300px;
   height: 300px;
   background: #FFF;

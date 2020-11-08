@@ -12,7 +12,7 @@ var rhit = rhit || {};
 /** globals */
 rhit.fbAuthManager = null;
 rhit.fbChatManager = null;
-rhit.fbMapManager = null;
+rhit.fbTokenManager = null;
 
 rhit.FB_TOKEN_URL = "url";
 rhit.FB_DIV_ID = "divID";
@@ -108,13 +108,14 @@ rhit.SignUpPageController = class {
 }
 
 rhit.Token = class {
-	constructor(id, url) {
+	constructor(id, url, divID) {
 		this.id = id;
 		this.url = url;
+		this.divID = divID;
 	}
 }
 
-rhit.FbMapPageController = class {
+rhit.MapPageController = class {
 
 	_createRow(num) {
 		//return htmlToElement(`<div ondrop="drop(event)" ondragover="allowDrop(event)" class="square" ><img class="aBox" draggable="true" ondragstart="drag(event)"></div>`);
@@ -138,6 +139,7 @@ rhit.FbMapPageController = class {
 				row.appendChild(newRows[g][j]);
 			}
 			g++;
+			
 		});
 
 		//Source: https://developer.mozilla.org/en-US/docs/Web/API/Document/drag_event
@@ -145,35 +147,33 @@ rhit.FbMapPageController = class {
 
 		document.addEventListener("dragstart", function(event) {
 			dragged = event.target;
-			console.log("DragStart");
 		})
 
 		document.addEventListener("dragover", function(event) {
 			// prevent default to allow drop
 			event.preventDefault();
-			console.log("PreventDefault");
 		  }, false);
 
 		document.addEventListener("drop", (event) =>  {
 			// prevent default action (open as link for some elements)
 			event.preventDefault();
-			console.log(event.target.tagName);
 			let image = event.target;
 			if (image.tagName == "DIV") {
 				image = image.querySelector("img");
 			}
 			if (image.tagName == "IMG" && image.className == "aBox" && dragged.src.length > 0) {
-				console.log("Drop");
-				image.src = dragged.src;
+				const temp = dragged.src;
 				dragged.src = "";
-				this.updateMap(image,dragged);
+				image.src = temp;
+				rhit.fbTokenManager.updateToken(dragged.id, image.id);
+				//this.updateMap(image,dragged);
 			}
 		}, false);
 
 		
 		document.querySelector("#submitToken").onclick = (event) => {
 			const url = document.getElementById("urlInput").value;
-			this.addToken(url);
+			rhit.fbTokenManager.addToken(url);
 		};
 
 
@@ -189,40 +189,30 @@ rhit.FbMapPageController = class {
 		//Testing Code
 		
 		//this.addToken("https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU");
-		document.getElementById(10).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU";
-		document.getElementById(18).src = "https://wiki.teamfortress.com/w/images/thumb/d/d8/Engineer.png/375px-Engineer.png";
-		document.getElementById(56).src = "https://img.favpng.com/15/24/12/team-fortress-2-engineering-taunting-science-png-favpng-3g9hvBzWy43XBAa9RWPJGGMpj.jpg";
-		document.getElementById(70).src = "https://i.redd.it/i51xeosj0bc31.png";
+		//document.getElementById(10).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU";
+		//document.getElementById(18).src = "https://wiki.teamfortress.com/w/images/thumb/d/d8/Engineer.png/375px-Engineer.png";
+		//document.getElementById(56).src = "https://img.favpng.com/15/24/12/team-fortress-2-engineering-taunting-science-png-favpng-3g9hvBzWy43XBAa9RWPJGGMpj.jpg";
+		//document.getElementById(70).src = "https://i.redd.it/i51xeosj0bc31.png";
 		
 		//dragElement(document.querySelectorAll(".columns"));	
-		//this.beginListening(this.updateMap.bind);
+		rhit.fbTokenManager.beginListening(this.updateMap.bind(this));
 	}
 
 	
 
 	updateMap(newPos, oldPos) {
-		console.log("Updating Map")
-		//const oldDoc = firebase.firestore().collection("Campaigns").doc("Map").collection("Columns");
-		for (let i=0;i < rhit.fbMapPageController.length;i++) {
-			const tk = this.getTokenAt(i);
-			console.log(tk.url);
+		console.log("Updating Map");
+		//console.log(rhit.fbTokenManager.length);
+
+		for (let j = 0;j < 100;j++) {
+			document.getElementById(j).src = "";
 		}
 
-		/*
-		firebase.firestore().collection("Campaigns").doc("Map").collection("Columns").doc(``).collection("Tokens").doc(``).add({
-			Message: text,
-			Timestamp: new Date(),
-			UserID: fbAuthManager._user
-		})
-		.then(function(docRef) {
-			console.log("Chat sent succesfully");
-			let box = document.querySelector("#chatBox");
-			box.value = box.value + "/n" + text;
-		})
-		.catch(function(error) {
-			console.error("Error adding document: ", error);
-		});
-		*/
+		for (let i=0;i < rhit.fbTokenManager.length;i++) {
+			const tk = rhit.fbTokenManager.getTokenAt(i);
+			document.getElementById(tk.divID).src = tk.url;
+		}
+
 		return;
 	}
 
@@ -253,6 +243,7 @@ rhit.FbMapPageController = class {
 
 rhit.fbTokenManager = class {
 	constructor() {
+		console.log("Created TokenManager")
 		this._documentSnapshots = [];
 		this._ref = firebase.firestore().collection("Campaigns").doc("Map").collection("Tokens");
 		this._unsubscribe = null;
@@ -261,7 +252,6 @@ rhit.fbTokenManager = class {
 	addToken(url) {
 		console.log("Add Token");
 		const location = this._ref;
-		
 		location.doc().set({
 			[rhit.FB_TOKEN_URL]: url,
 			[rhit.FB_DIV_ID]: "starter" 
@@ -278,14 +268,30 @@ rhit.fbTokenManager = class {
 		const token = new rhit.Token(
 			docSnapShot.id, 
 			docSnapShot.get(rhit.FB_TOKEN_URL), 
+			docSnapShot.get(rhit.FB_DIV_ID)
 		);
-		return ph;
+		return token;
+	}
+
+	async updateToken(oldDIV, newDIV) {
+		//console.log(`${oldDIV} --> ${newDIV}`);
+		let query = await this._ref.where(rhit.FB_DIV_ID, "==", oldDIV).get();
+		if (query.empty) {
+			console.log("ERROR: Could not find Token")
+		} else {
+			query.forEach(async doc => {
+				this._ref.doc(doc.id).update({
+					[rhit.FB_DIV_ID]: newDIV
+				})
+			});
+		}
+		//tokenRef.set();
 	}
 
 	beginListening(changeListender) {
 		this._unsubscribe = this._ref
 			.onSnapshot((querySnapshot) => {
-			console.log("Map update");
+			//console.log("Map update");
 			this._documentSnapshots = querySnapshot.docs;
 			changeListender();
 		});
@@ -393,8 +399,8 @@ rhit.main = function () {
 
 	if(document.querySelector("#mapPage")) {
 		console.log("You are on the map page.")
-		rhit.fbMapManager = new rhit.fbMapManager();
-		new rhit.FbMapPageController();
+		rhit.fbTokenManager = new rhit.fbTokenManager();
+		new rhit.MapPageController();
 	}
 
 	if(document.querySelector("#homePage")) {

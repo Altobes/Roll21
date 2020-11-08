@@ -11,6 +11,11 @@ var rhit = rhit || {};
 
 /** globals */
 rhit.fbAuthManager = null;
+rhit.fbChatManager = null;
+rhit.fbMapManager = null;
+
+rhit.FB_TOKEN_URL = "url";
+rhit.FB_DIV_ID = "divID";
 
 function htmlToElement(html) {
 	var template = document.createElement("template");
@@ -102,7 +107,14 @@ rhit.SignUpPageController = class {
 	}
 }
 
-rhit.MapPageController = class {
+rhit.Token = class {
+	constructor(id, url) {
+		this.id = id;
+		this.url = url;
+	}
+}
+
+rhit.FbMapPageController = class {
 
 	_createRow(num) {
 		//return htmlToElement(`<div ondrop="drop(event)" ondragover="allowDrop(event)" class="square" ><img class="aBox" draggable="true" ondragstart="drag(event)"></div>`);
@@ -142,7 +154,7 @@ rhit.MapPageController = class {
 			console.log("PreventDefault");
 		  }, false);
 
-		document.addEventListener("drop", function(event) {
+		document.addEventListener("drop", (event) =>  {
 			// prevent default action (open as link for some elements)
 			event.preventDefault();
 			console.log(event.target.tagName);
@@ -154,8 +166,15 @@ rhit.MapPageController = class {
 				console.log("Drop");
 				image.src = dragged.src;
 				dragged.src = "";
+				this.updateMap(image,dragged);
 			}
 		}, false);
+
+		
+		document.querySelector("#submitToken").onclick = (event) => {
+			const url = document.getElementById("urlInput").value;
+			this.addToken(url);
+		};
 
 
 		document.querySelector("#textBox").addEventListener = (event) => {
@@ -168,14 +187,47 @@ rhit.MapPageController = class {
 		
 
 		//Testing Code
+		
+		//this.addToken("https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU");
 		document.getElementById(10).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU";
 		document.getElementById(18).src = "https://wiki.teamfortress.com/w/images/thumb/d/d8/Engineer.png/375px-Engineer.png";
 		document.getElementById(56).src = "https://img.favpng.com/15/24/12/team-fortress-2-engineering-taunting-science-png-favpng-3g9hvBzWy43XBAa9RWPJGGMpj.jpg";
 		document.getElementById(70).src = "https://i.redd.it/i51xeosj0bc31.png";
 		
 		//dragElement(document.querySelectorAll(".columns"));	
+		//this.beginListening(this.updateMap.bind);
 	}
 
+	
+
+	updateMap(newPos, oldPos) {
+		console.log("Updating Map")
+		//const oldDoc = firebase.firestore().collection("Campaigns").doc("Map").collection("Columns");
+		for (let i=0;i < rhit.fbMapPageController.length;i++) {
+			const tk = this.getTokenAt(i);
+			console.log(tk.url);
+		}
+
+		/*
+		firebase.firestore().collection("Campaigns").doc("Map").collection("Columns").doc(``).collection("Tokens").doc(``).add({
+			Message: text,
+			Timestamp: new Date(),
+			UserID: fbAuthManager._user
+		})
+		.then(function(docRef) {
+			console.log("Chat sent succesfully");
+			let box = document.querySelector("#chatBox");
+			box.value = box.value + "/n" + text;
+		})
+		.catch(function(error) {
+			console.error("Error adding document: ", error);
+		});
+		*/
+		return;
+	}
+
+	
+	
 	
 
 	chat() {
@@ -193,6 +245,57 @@ rhit.MapPageController = class {
 		.catch(function(error) {
 			console.error("Error adding document: ", error);
 		});
+	}
+	
+
+	
+}
+
+rhit.fbTokenManager = class {
+	constructor() {
+		this._documentSnapshots = [];
+		this._ref = firebase.firestore().collection("Campaigns").doc("Map").collection("Tokens");
+		this._unsubscribe = null;
+	}
+
+	addToken(url) {
+		console.log("Add Token");
+		const location = this._ref;
+		
+		location.doc().set({
+			[rhit.FB_TOKEN_URL]: url,
+			[rhit.FB_DIV_ID]: "starter" 
+		}).then(function (docRef) {
+			console.log("Document written with ID: ", docRef.id);
+		}).catch(function (error) {
+			console.log("Error adding documents: ", error);
+		});
+		document.getElementById("starter").src = url;
+	}
+
+	getTokenAt(index) {
+		const docSnapShot = this._documentSnapshots[index];
+		const token = new rhit.Token(
+			docSnapShot.id, 
+			docSnapShot.get(rhit.FB_TOKEN_URL), 
+		);
+		return ph;
+	}
+
+	beginListening(changeListender) {
+		this._unsubscribe = this._ref
+			.onSnapshot((querySnapshot) => {
+			console.log("Map update");
+			this._documentSnapshots = querySnapshot.docs;
+			changeListender();
+		});
+	}
+	stopListening() {
+		this._unsubscribe ();
+	}
+
+	get length() {
+		return this._documentSnapshots.length;
 	}
 }
 
@@ -290,7 +393,8 @@ rhit.main = function () {
 
 	if(document.querySelector("#mapPage")) {
 		console.log("You are on the map page.")
-		new rhit.MapPageController();
+		rhit.fbMapManager = new rhit.fbMapManager();
+		new rhit.FbMapPageController();
 	}
 
 	if(document.querySelector("#homePage")) {

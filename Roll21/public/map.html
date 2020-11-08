@@ -71,13 +71,17 @@
       </div>
       <div id="chat">
         <textarea readonly id="chatBox" name="Chat">
-          
         </textarea>
         <textarea id="textBox">
         </textarea>
         <button id="sendButton">Send</button>
       </div>       
     </div>
+    <div id="start" class="starter">
+      <img alt="&nbsp;" id="starter" class="aBox" draggable="true" ondragstart="event.dataTransfer.setData('text',src)" onerror='this.style.display = "none"' style="display: none" onload="this.style.display=''">
+    </div>
+    <textarea id="urlInput"></textarea>
+    <button id="submitToken" class="button">Add New Token</button>
   </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>

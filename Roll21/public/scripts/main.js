@@ -55,16 +55,21 @@ rhit.LoginPageController = class {
 rhit.FbAuthManager = class {
 	constructor() {
 		this._user = null;
+		this._ref = firebase.firestore().collection("Users");
+		this._newUser = false;
 	}
 	beginListening(changeListener) {
 		firebase.auth().onAuthStateChanged((user) => {
 			this._user = user;
+			
 			changeListener();
 
 			if (user) {
 				console.log('uid :>> ', this._user.uid);
+				//if (user.displaY)
 			} else {
 				console.log("There is no user signed in");
+				
 	
 			}
 		});
@@ -73,6 +78,7 @@ rhit.FbAuthManager = class {
 		const inputEmailEl = document.querySelector("#inputUser").value;
 		const inputPasswordEl = document.querySelector("#inputPassword").value;
 		firebase.auth().signInWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then(function () {
+			
 			window.location.href = `/home.html`;
 		}).catch = (error) => {
 			var errorCode = error.code;
@@ -83,12 +89,26 @@ rhit.FbAuthManager = class {
 	signOut() {
 		firebase.auth().signOut().then(function () {
 			console.log("You are now signed out")
+			window.location.href = `/index.html?`;
 		}).catch(function (erro) {
 			console.log("Sign out error");
 		});
 	}
 	createAccount(inputEmailEl, inputPasswordEl) {
-		firebase.auth().createUserWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then(function () {
+		firebase.auth().createUserWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then((user) => {
+			// get user data from the auth trigger
+			/*
+			const userUid = rhit.fbAuthManager.uid; // The UID of the user.
+			// set account  doc  
+			const account = {
+			  useruid: userUid,
+			  email: inputEmailEl,
+			  campaigns: []
+			}
+			await firebase.firestore().collection('Users').doc(userUid).set(account); 
+			*/
+			//user.email = inputEmailEl;
+			this._newUser = true;
 			window.location.href = `/home.html`;
 		}).catch = (error) => {
 			var errorCode = error.code;
@@ -96,6 +116,21 @@ rhit.FbAuthManager = class {
 			console.log("creation error", errorCode, errorMessage);
 		}
 	}
+
+	async deleteAccount() {
+		var user = firebase.auth().currentUser;
+		var email = user.email;
+		deleteStuff(email);
+		console.log(email);
+		user.delete().then( async () => {
+			
+			window.location.href = `/index.html?`;
+		  }).catch(function(error) {
+			// An error happened.
+		  });
+		  
+	}
+
 	
 
 
@@ -105,12 +140,17 @@ rhit.FbAuthManager = class {
 	get uid() {
 		return this._user.uid;
 	}
+	get isNew() {
+		return this._newUser;
+	}
+	changeNew() {
+		this._newUser = false;
+	}
 }
 
 rhit.SignUpPageController = class {
 	constructor() {
-		
-
+	
 		document.querySelector("#account").onclick = (event) => {
 			window.location.href = `/index.html?`;
 		};
@@ -395,6 +435,15 @@ rhit.HomePageController = class {
 		document.querySelector("#settings").addEventListener = (event) => {
 		
 		};
+		document.querySelector("#logout-button").onclick = (event) => {
+			rhit.fbAuthManager.signOut();
+		};
+		document.querySelector("#delete").onclick = (event) => {
+			rhit.fbAuthManager.deleteAccount();
+		};
+
+
+
 
 	}
 }
@@ -502,7 +551,9 @@ rhit.FbCampaignManager = class {
 		return camp;
 	}
 
-	 addPlayer(username) {
+
+
+	async addPlayer() {
 		
 	}
 
@@ -537,12 +588,37 @@ rhit.FbCampaignManager = class {
 	}
 }
 
+async function deleteStuff(email) {
+	console.log(email);
+	const res = await firebase.firestore().collection("Users").doc(email).delete();
+	console.log(res);
+}
+
 
 rhit.main = function () {
 	console.log("Ready");
 	rhit.fbAuthManager = new rhit.FbAuthManager();
 	rhit.fbAuthManager.beginListening(() => {
 		console.log("is SignedIn = ",rhit.fbAuthManager.isSigndIn);
+		
+		if (rhit.fbAuthManager.isSigndIn) {
+			var user = firebase.auth().currentUser;
+			if (!user.displayName) {
+				
+				firebase.firestore().collection("Users").doc(user.email).set({
+					uid: user.uid,
+					campaigns: []
+				}).then(() => {
+					user.updateProfile({
+						displayName: user.email.slice(0,user.email.length-10)
+					})
+				}) 
+				.catch(function (error) {
+					console.log("Error adding documents: ", error);
+				});  
+				
+			}
+		}
 	});
 	rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 
@@ -565,8 +641,9 @@ rhit.main = function () {
 	}
 
 	if(document.querySelector("#homePage")) {
-		console.log("You are on the map page.")
+		console.log("You are on the home page.")
 		new rhit.HomePageController();
+		
 	}
 	if(document.querySelector("#campaignPage")) {
 		

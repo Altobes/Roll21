@@ -32,54 +32,62 @@
   #chat-button {
     border-right: 0px;
   }
-  #options {
-    margin-top: 50px;
+  #campaignPage {
+    width: 100%;
   }
-  .list-group-item {
-    margin-left: auto;
-    margin-right: auto;
-    border-width: 1px;
-    width: 300px;
-    height: 100px;
-    justify-content: center;
+  #createNew {
+    width: 50%;
+    height: 100vh;
+    margin: 0;
+    float: left;
+    border-right: 1px solid black;
   }
-  .list-group-item:hover {
-    background-color: #dabdab;
-    color: #AA3333;
-    cursor: pointer;
+  #chooseExisting {
+    width: 50%;
+    margin: 0;
+    float: left;
   }
-  #logout-button {
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 250px;
-    height: 50px; 
-    width: 150px;
+  h1 {
+    text-align: center;
+  }
+  #createCampaign {
+    position: absolute;
+    margin: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   }
 </style>
 
 <body>
-  <nav class="navbar navbar-dark fixed-top">
+  <!-- <nav class="navbar navbar-dark fixed-top">
     <a class="navbar-brand" href="#">Roll21</a>
-  </nav>
-  <div id="campaignPage"></div>
+  </nav> -->
+  <div id="campaignPage">
+    <div id="createNew">
+      <h1>Make a New Campaign</h1>
+      <label for="campName">Campaign Name</label>
+      <input type="text" id="campName" name="campName">
+      <label for="player">Input Player Name:</label>
+      <input type="text" id="player" name="player">
+      <button id="addPlayer">Add Player</button>
+      <p>Current Players:</p>
+      <ul>
+        <li>Name 1</li>
+        <li>Name 2</li>
+      </ul>
+      <button id="createCampaign">Create Campaign!</button>
+    </div>
+    <div id="chooseExisting">
+      <h1>Play or Edit an Existing Campaign</h1>
+      <br>
+        <label for="campaigns">Click to choose a campaign:</label>
+        <select name="campaigns" id="campaigns">
+          <option value="test1">test 1</option>
+          <option value="test2">test 2</option>
+        </select>
+    </div>
   </div>
-
-  <ul class="list-group" id="options">
-    <li id="create" class="list-group-item">Create Campaign</li>
-  </ul>
-  <form>
-    <label for="campName">Campaign Name</label>
-    <input type="text" id="campName" name="campName">
-    <label for="player">Input Player Name:</label>
-    <input type="text" id="player" name="player">
-    <button id="addPlayer">Add Player</button>
-  </form>
-  <label for="campaigns">Choose a campaign:</label>
-  <select name="campaigns" id="campaigns"></select>
-  <button id="selectCampaign" class="button">Select Campaign</button>
-    
-  </select> 
-  
+  <div style="clear: both;" > </div>
 
   <ul class="fixed-bottom nav-list">
     <li><a href="#" class="nav-button">Back</a></li>

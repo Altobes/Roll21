@@ -22,10 +22,11 @@ rhit.FB_UID = "uid";
 rhit.FB_CHAT =  "message";
 rhit.FB_KEY_LAST_TOUCHED =  "timestamp";
 
-rhit.FB_CODE = "code";
+//rhit.FB_CODE = "code";
 rhit.FB_CREATOR = "creator";
 rhit.FB_USERS = "users";
 rhit.FB_NAME = "name";
+
 
 function htmlToElement(html) {
 	var template = document.createElement("template");
@@ -66,7 +67,6 @@ rhit.FbAuthManager = class {
 
 			if (user) {
 				console.log('uid :>> ', this._user.uid);
-				//if (user.displaY)
 			} else {
 				console.log("There is no user signed in");
 				
@@ -96,18 +96,6 @@ rhit.FbAuthManager = class {
 	}
 	createAccount(inputEmailEl, inputPasswordEl) {
 		firebase.auth().createUserWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then((user) => {
-			// get user data from the auth trigger
-			/*
-			const userUid = rhit.fbAuthManager.uid; // The UID of the user.
-			// set account  doc  
-			const account = {
-			  useruid: userUid,
-			  email: inputEmailEl,
-			  campaigns: []
-			}
-			await firebase.firestore().collection('Users').doc(userUid).set(account); 
-			*/
-			//user.email = inputEmailEl;
 			this._newUser = true;
 			window.location.href = `/home.html`;
 		}).catch = (error) => {
@@ -128,7 +116,6 @@ rhit.FbAuthManager = class {
 		  }).catch(function(error) {
 			// An error happened.
 		  });
-		  
 	}
 
 	
@@ -292,10 +279,10 @@ rhit.MapPageController = class {
 }
 
 rhit.fbTokenManager = class {
-	constructor() {
+	constructor(campaignId) {
 		console.log("Created TokenManager")
 		this._documentSnapshots = [];
-		this._ref = firebase.firestore().collection("Campaigns").doc(rhit._selected).collection("Tokens");
+		this._ref = firebase.firestore().collection("Campaigns").doc(campaignId).collection("Tokens");
 		this._unsubscribe = null;
 	}
 
@@ -432,19 +419,36 @@ rhit.HomePageController = class {
 		document.querySelector("#game").onclick = (event) => {
 			window.location.href = `/map.html?`;
 		};
-		document.querySelector("#settings").addEventListener = (event) => {
-		
-		};
 		document.querySelector("#logout-button").onclick = (event) => {
 			rhit.fbAuthManager.signOut();
 		};
 		document.querySelector("#delete").onclick = (event) => {
 			rhit.fbAuthManager.deleteAccount();
 		};
+		document.getElementById("campaignList").onchange = async (event) => {
+			const chosen = document.getElementById("campaignList").value;
+			console.log(chosen);
+			await rhit.fbCampaignManager.selectCampaign(chosen);
+			
+			window.location.href = `/map.html?id=${rhit.fbCampaignManager.selected}`;
+		}
+		rhit.fbCampaignManager.beginListening(this.updateList.bind(this));
+	}
 
+	_createOption(camp) {
+		return htmlToElement(`<option value="${camp}">${camp}</option>`);
+	}
 
+	updateList() {
+		const camp = document.querySelector("#campaignList");
+		for (let i=0;i < rhit.fbCampaignManager.length;i++) {
+			const cm = rhit.fbCampaignManager.getCampaignAt(i);
+			if (cm.creator != rhit.fbAuthManager.uid) {
+				continue;
+			}
 
-
+			camp.appendChild(this._createOption(cm.name));
+		}
 	}
 }
 
@@ -458,6 +462,11 @@ rhit.Campaign = class {
 
 rhit.CampaignPageController = class {
 	constructor(creator, code) {
+
+		$(function() {
+			$("form").submit(function() { return false; });
+		});
+
 		document.querySelector("#create").onclick = (event) => {
 			const name = document.getElementById("campName").value;
 			if (name.empty) {
@@ -468,22 +477,23 @@ rhit.CampaignPageController = class {
 			
 		};
 
-		document.querySelector("#addPlayer").onclick = (event) => {
+		document.getElementById("addPlayer").onclick = (event) => {
 			const name = document.getElementById("player").value;
+			
 			if (name.empty) {
 				console.error("Need name"); //Add prompt
 			} else {
 				rhit.fbCampaignManager.addPlayer(name);
 			}
-			
-		};
+		}
+
 
 		document.querySelector("#selectCampaign").onclick = (event) => {
 			const camp = document.getElementById("campaigns").value;
-			if (name.empty) {
-				console.error("Need name"); //Add prompt
+			if (camp.empty) {
+				console.error("Select Campaign"); //Add prompt
 			} else {
-				rhit.fbCampaignManager.addPlayer(name);
+				rhit.fbCampaignManager.selectCampaign(camp);
 			}
 			
 		};
@@ -498,9 +508,13 @@ rhit.CampaignPageController = class {
 
 	updateList() {
 		const camp = document.querySelector("#campaigns");
+		while (camp.firstChild) {
+			camp.removeChild(camp.firstChild);
+		}
+		camp.appendChild(htmlToElement("<option selected disabled value>Choose Campaign</option>"));
 		for (let i=0;i < rhit.fbCampaignManager.length;i++) {
 			const cm = rhit.fbCampaignManager.getCampaignAt(i);
-			console.log(cm.creator);
+			//console.log(cm.creator);
 			if (cm.creator != rhit.fbAuthManager.uid) {
 				continue;
 			}
@@ -517,13 +531,17 @@ rhit.FbCampaignManager = class {
 		this._ref = firebase.firestore().collection("Campaigns");
 		this._unsubscribe = null;
 		this._selected = null;
+		this._owned = [];
+		this._campaigns = [];
+
+
 	}
 	createCampaign(name) {
 		console.log("Create Campagin");
 		this._ref.add({
 			[rhit.FB_CREATOR]: rhit.fbAuthManager.uid,
 			[rhit.FB_NAME]: name,
-			[rhit.FB_USERS]: [rhit.fbAuthManager.uid]
+			[rhit.FB_USERS]: [firebase.auth().currentUser.displayName]
 		}).then(function (docRef) {
 			console.log("Document written with ID: ", docRef.id);
 			docRef.collection("Tokens").add({
@@ -551,10 +569,47 @@ rhit.FbCampaignManager = class {
 		return camp;
 	}
 
-
-
-	async addPlayer() {
+	async selectCampaign(name) {
+		//const query = await this._ref.where(rhit.FB_CREATOR, "==", name).get();
+		const query = await this._ref.where(rhit.FB_NAME, "==", name).get();
 		
+		if (query.empty) {
+			console.log("ERROR: Could not find Campaign")
+		} else {
+			query.forEach(async doc => {
+				this._selected = doc.id;
+				console.log("selected " + doc.id)
+			});
+			
+		}
+		
+	}
+
+
+
+	addPlayer(player) {
+		console.log("FF");
+		/*
+		firebase.firestore().collection("Users").doc(player+"@shmee.edu").set({
+			campaigns: [this._selected]
+		},{merge:true}).then( () => { 
+			console.log(player + " added");
+		}).catch((err) => {
+			console.log(err);
+		})
+		*/this._ref.doc(this._selected).update( {
+   		users: firebase.firestore.FieldValue.arrayUnion(player)
+		});
+
+		/*
+		this._ref.doc(this._selected).set({
+			users: [player]
+		}, {merge: true})
+		.then(() => {
+			console.log("Added")
+		}).catch(() => {
+
+		})*/
 	}
 
 	 updateToken(oldDIV, newDIV) {
@@ -585,6 +640,9 @@ rhit.FbCampaignManager = class {
 
 	get length() {
 		return this._documentSnapshots.length;
+	}
+	get selected() {
+		return this._selected;
 	}
 }
 
@@ -636,8 +694,17 @@ rhit.main = function () {
 
 	if(document.querySelector("#mapPage")) {
 		console.log("You are on the map page.")
-		rhit.fbTokenManager = new rhit.fbTokenManager();
+		const queryString = window.location.search;
+		const urlParams = new URLSearchParams(queryString);
+		const campaignId = urlParams.get("id");
+
+		if (!campaignId) {
+			 console.log("Error! Missing photo id");
+			 window.location.href = "/home.html"
+		} 
+		rhit.fbTokenManager = new rhit.fbTokenManager(campaignId);
 		new rhit.MapPageController();
+		
 	}
 
 	if(document.querySelector("#homePage")) {

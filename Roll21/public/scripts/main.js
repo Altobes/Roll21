@@ -442,11 +442,38 @@ rhit.HomePageController = class {
 	updateList() {
 		const camp = document.querySelector("#campaignList");
 		for (let i=0;i < rhit.fbCampaignManager.length;i++) {
+			let found = false;
 			const cm = rhit.fbCampaignManager.getCampaignAt(i);
+			cm.FB_USERS.forEach(user => {
+				if (user != firebase.auth().currentUser.displayName) {
+					continue;
+					found = true;
+					break;
+				}
+				if (found) {
+					camp.appendChild(this._createOption(cm.name));
+				}
+			})
+
+			}
 			if (cm.creator != rhit.fbAuthManager.uid) {
+				
 				continue;
 			}
 
+			
+		}
+	}
+
+	runThrough(i) {
+		const cm = rhit.fbCampaignManager.getCampaignAt(i);
+		cm.FB_USERS.forEach(user => {
+		if (user != firebase.auth().currentUser.displayName) {
+			continue;
+			found = true;
+			break;
+		}
+		if (found) {
 			camp.appendChild(this._createOption(cm.name));
 		}
 	}
@@ -652,13 +679,25 @@ async function deleteStuff(email) {
 	console.log(res);
 }
 
+rhit.checkForRedirect = function() {
+	console.log(rhit.fbAuthManager.isSigndIn);
+	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSigndIn) {
+		window.location.href = "/home.html";
+		
+	}
+	if (!document.querySelector("#loginPage") && !rhit.fbAuthManager.isSigndIn) {
+		window.location.href = "/index.html";
+	}
+};
+
 
 rhit.main = function () {
+	
 	console.log("Ready");
 	rhit.fbAuthManager = new rhit.FbAuthManager();
 	rhit.fbAuthManager.beginListening(() => {
 		console.log("is SignedIn = ",rhit.fbAuthManager.isSigndIn);
-		
+		rhit.checkForRedirect();
 		if (rhit.fbAuthManager.isSigndIn) {
 			var user = firebase.auth().currentUser;
 			if (!user.displayName) {
@@ -678,22 +717,23 @@ rhit.main = function () {
 			}
 		}
 	});
-	rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
+	
 
 	if(document.querySelector("#loginPage")) {
 		console.log("You are on the login page.")
-		
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		new rhit.LoginPageController();
 	}
 
 	if(document.querySelector("#signUpPage")) {
 		console.log("You are on the sign up page.")
-		
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		new rhit.SignUpPageController();
 	}
 
 	if(document.querySelector("#mapPage")) {
 		console.log("You are on the map page.")
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const campaignId = urlParams.get("id");
@@ -708,12 +748,13 @@ rhit.main = function () {
 	}
 
 	if(document.querySelector("#homePage")) {
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		console.log("You are on the home page.")
 		new rhit.HomePageController();
 		
 	}
 	if(document.querySelector("#campaignPage")) {
-		
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		new rhit.CampaignPageController();
 		
 	}

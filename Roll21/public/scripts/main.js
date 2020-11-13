@@ -512,6 +512,7 @@ rhit.CampaignPageController = class {
 				console.error("Select Campaign"); //Add prompt
 			} else {
 				rhit.fbCampaignManager.selectCampaign(camp);
+				this.updatePlayerList();
 			}
 		}
 
@@ -552,37 +553,17 @@ rhit.CampaignPageController = class {
 		
 			const camp = document.querySelector("#campaignList");
 			const campaign = rhit.fbCampaignManager.getCampaignByName(camp);
+			campaign.users.forEach(user => {
+				camp.appendChild(this._createOption(`<li>${user}</li>`));
+			})
 			for (let i=0;i < rhit.fbCampaignManager.length;i++) {
 				const cm = rhit.fbCampaignManager.getCampaignAt(i);
 				console.log(this.runThrough(i))
 				if (this.runThrough(i)) {
-					camp.appendChild(this._createOption(cm.name));
+					
 					continue;
 				}
 			}
-		
-	
-	
-			const cm = rhit.fbCampaignManager.getCampaignAt(i);
-			let found = false;
-			cm.users.forEach(user => {
-				if (user == firebase.auth().currentUser.displayName) {
-					console.log("Should be true")
-					found = true;
-					return true;
-				}
-			})
-			
-		
-		
-		for (let i=0;i < rhit.fbCampaignManager.length;i++) {
-			const cm = rhit.fbCampaignManager.getCampaignAt(i);
-			if (cm.creator != rhit.fbAuthManager.uid) {
-				continue;
-			}
-
-			list.appendChild(htmlToElement(`<li>${name}</li>`));
-		}
 	}
 }
 
@@ -635,18 +616,18 @@ rhit.FbCampaignManager = class {
 	getCampaignByName(name) {
 		let index = -1;
 		for (let i =0;i < this._documentSnapshots.length;i++) {
-			const docSnapShot = this._documentSnapshots[index];
-			if (docSnapShot.get(rhit.FB_NAME) == name) {
+			const docSnapShotA = this._documentSnapshots[i];
+			if (docSnapShotA.get(rhit.FB_NAME) == name) {
 				index = i;
 				break;
 			}
 		}
-		const docSnapShot = this._documentSnapshots[index];
+		const docSnapShotB = this._documentSnapshots[index];
 		const camp = new rhit.Campaign(
-			docSnapShot.id, 
-			docSnapShot.get(rhit.FB_NAME),
-			docSnapShot.get(rhit.FB_CREATOR),
-			docSnapShot.get(rhit.FB_USERS)
+			docSnapShotB.id, 
+			docSnapShotB.get(rhit.FB_NAME),
+			docSnapShotB.get(rhit.FB_CREATOR),
+			docSnapShotB.get(rhit.FB_USERS)
 		);
 		return camp;
 	}

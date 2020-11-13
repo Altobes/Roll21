@@ -481,7 +481,7 @@ rhit.CampaignPageController = class {
 			$("form").submit(function() { return false; });
 		});
 
-		document.querySelector("#create").onclick = (event) => {
+		document.querySelector("#createCampaign").onclick = (event) => {
 			const name = document.getElementById("campName").value;
 			if (name.empty) {
 				console.error("Need name"); //Add prompt
@@ -501,16 +501,14 @@ rhit.CampaignPageController = class {
 			}
 		}
 
-
-		document.querySelector("#selectCampaign").onclick = (event) => {
+		document.getElementById("campaigns").onchange = async (event) => {
 			const camp = document.getElementById("campaigns").value;
 			if (camp.empty) {
 				console.error("Select Campaign"); //Add prompt
 			} else {
 				rhit.fbCampaignManager.selectCampaign(camp);
 			}
-			
-		};
+		}
 
 		rhit.fbCampaignManager.beginListening(this.updateList.bind(this));
 
@@ -519,6 +517,9 @@ rhit.CampaignPageController = class {
 	_createOption(camp) {
 		return htmlToElement(`<option value="${camp}">${camp}</option>`);
 	}
+
+
+	
 
 	updateList() {
 		const camp = document.querySelector("#campaigns");
@@ -534,6 +535,47 @@ rhit.CampaignPageController = class {
 			}
 
 			camp.appendChild(this._createOption(cm.name));
+		}
+	}
+
+	updatePlayerList() {
+		const list = document.querySelector("#playerList");
+		while (list.firstChild) {
+			list.removeChild(list.firstChild);
+		}
+
+		
+			const camp = document.querySelector("#campaignList");
+			for (let i=0;i < rhit.fbCampaignManager.length;i++) {
+				const cm = rhit.fbCampaignManager.getCampaignAt(i);
+				console.log(this.runThrough(i))
+				if (this.runThrough(i)) {
+					camp.appendChild(this._createOption(cm.name));
+					continue;
+				}
+			}
+		
+	
+	
+			const cm = rhit.fbCampaignManager.getCampaignAt(i);
+			let found = false;
+			cm.users.forEach(user => {
+				if (user == firebase.auth().currentUser.displayName) {
+					console.log("Should be true")
+					found = true;
+					return true;
+				}
+			})
+			return found;
+		
+		
+		for (let i=0;i < rhit.fbCampaignManager.length;i++) {
+			const cm = rhit.fbCampaignManager.getCampaignAt(i);
+			if (cm.creator != rhit.fbAuthManager.uid) {
+				continue;
+			}
+
+			list.appendChild(htmlToElement(`<li>${name}</li>`));
 		}
 	}
 }
@@ -603,28 +645,10 @@ rhit.FbCampaignManager = class {
 
 
 	addPlayer(player) {
-		console.log("FF");
-		/*
-		firebase.firestore().collection("Users").doc(player+"@shmee.edu").set({
-			campaigns: [this._selected]
-		},{merge:true}).then( () => { 
-			console.log(player + " added");
-		}).catch((err) => {
-			console.log(err);
-		})
-		*/this._ref.doc(this._selected).update( {
+		this._ref.doc(this._selected).update( {
    		users: firebase.firestore.FieldValue.arrayUnion(player)
 		});
 
-		/*
-		this._ref.doc(this._selected).set({
-			users: [player]
-		}, {merge: true})
-		.then(() => {
-			console.log("Added")
-		}).catch(() => {
-
-		})*/
 	}
 
 	 updateToken(oldDIV, newDIV) {

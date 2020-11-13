@@ -75,14 +75,6 @@
       <br>
       <label for="campName">Campaign Name</label>
       <input type="text" id="campName" name="campName">
-      <label for="player">Input Player Name:</label>
-      <input type="text" id="player" name="player">
-      <button id="addPlayer">Add Player</button>
-      <p>Current Players:</p>
-      <ul>
-        <li>Name 1</li>
-        <li>Name 2</li>
-      </ul>
       <button id="createCampaign" class="btn-primary">Create Campaign!</button>
     </div>
     <div id="chooseExisting">
@@ -90,16 +82,19 @@
       <br>
         <label for="campaigns">Click to choose a campaign:</label>
         <select name="campaigns" id="campaigns">
-          <option value="test1">test 1</option>
-          <option value="test2">test 2</option>
         </select>
         <br>
-        <label for="player2">Input Player Name:</label>
-        <input type="text" id="player2" name="player2">
+        <label for="player">Input Player Name:</label>
+        <input type="text" id="player" name="player">
         <br>
         <br>
-        <button id="add" class="btn-primary">Add Player</button>
-        <button id="delete" class="btn-warning" onclick="return confirm('Are you sure?');">Delete Campaign</button>
+        <button id="addPlayer" class="btn-primary">Add Player</button>
+        <button id="deletePlayer" class="btn-warning" onclick="return confirm('Are you sure?');">Delete Campaign</button>
+        <p>Current Players:</p>
+      <ul id="playerList">
+        <li>Name 1</li>
+        <li>Name 2</li>
+      </ul>
     </div>
   </div>
   <div style="clear: both;" > </div>

@@ -9,9 +9,17 @@ body {
 
 .page-container {
     width: 100%;
-    margin-top: 75px;
+    margin-top: 10px;
     margin-left: 5%;
 }
+
+#home {
+    position: fixed;
+    bottom: 1%;
+    right: 1%;
+    border-radius: 100px;
+}
+
 
 /*CSS For Login */
 #loginContainer {

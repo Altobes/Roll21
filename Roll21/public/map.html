@@ -80,9 +80,13 @@
     <div id="start" class="starter">
       <img alt="&nbsp;" id="starter" class="aBox" draggable="true" ondragstart="event.dataTransfer.setData('text',src)" onerror='this.style.display = "none"' style="display: none" onload="this.style.display=''">
     </div>
-    <textarea id="urlInput"></textarea>
-    <button id="submitToken" class="button">Add New Token</button>
-    <button id="deleteToken" class="button">Delete Token</button>
+    <div id="moreTokens">
+      <label for="urlInput">Token Image URL: </label>
+      <input type="text" id="urlInput" name="urlInput"></textarea>
+      <button id="submitToken" class="button btn-success">Add Token</button>
+      <button id="deleteToken" class="button btn-danger">Delete Token</button>
+    </div>
+   
   </div>
   <script src="scripts/jquery.min.js"></script>
   <script src="scripts/popper.js"></script>

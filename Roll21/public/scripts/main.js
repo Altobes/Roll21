@@ -443,20 +443,34 @@ rhit.HomePageController = class {
 		const camp = document.querySelector("#campaignList");
 		for (let i=0;i < rhit.fbCampaignManager.length;i++) {
 			const cm = rhit.fbCampaignManager.getCampaignAt(i);
-			if (cm.creator != rhit.fbAuthManager.uid) {
+			console.log(this.runThrough(i))
+			if (this.runThrough(i)) {
+				camp.appendChild(this._createOption(cm.name));
 				continue;
 			}
-
-			camp.appendChild(this._createOption(cm.name));
 		}
+	}
+
+	runThrough(i) {
+		const cm = rhit.fbCampaignManager.getCampaignAt(i);
+		let found = false;
+		cm.users.forEach(user => {
+			if (user == firebase.auth().currentUser.displayName) {
+				console.log("Should be true")
+				found = true;
+				return true;
+			}
+		})
+		return found;
 	}
 }
 
 rhit.Campaign = class {
-	constructor(id, name, creator) {
+	constructor(id, name, creator, users) {
 		this.id = id;
 		this.name = name;
 		this.creator = creator;
+		this.users = users
 	}
 }
 
@@ -564,7 +578,8 @@ rhit.FbCampaignManager = class {
 		const camp = new rhit.Campaign(
 			docSnapShot.id, 
 			docSnapShot.get(rhit.FB_NAME),
-			docSnapShot.get(rhit.FB_CREATOR)
+			docSnapShot.get(rhit.FB_CREATOR),
+			docSnapShot.get(rhit.FB_USERS)
 		);
 		return camp;
 	}
@@ -652,13 +667,24 @@ async function deleteStuff(email) {
 	console.log(res);
 }
 
+rhit.checkForRedirect = function() {
+	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSigndIn) {
+		window.location.href = "/home.html";
+		
+	}
+	if (!document.querySelector("#loginPage") && !rhit.fbAuthManager.isSigndIn) {
+		window.location.href = "/index.html";
+	}
+};
+
 
 rhit.main = function () {
+	
 	console.log("Ready");
 	rhit.fbAuthManager = new rhit.FbAuthManager();
 	rhit.fbAuthManager.beginListening(() => {
 		console.log("is SignedIn = ",rhit.fbAuthManager.isSigndIn);
-		
+		rhit.checkForRedirect();
 		if (rhit.fbAuthManager.isSigndIn) {
 			var user = firebase.auth().currentUser;
 			if (!user.displayName) {
@@ -678,22 +704,23 @@ rhit.main = function () {
 			}
 		}
 	});
-	rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
+	
 
 	if(document.querySelector("#loginPage")) {
 		console.log("You are on the login page.")
-		
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		new rhit.LoginPageController();
 	}
 
 	if(document.querySelector("#signUpPage")) {
 		console.log("You are on the sign up page.")
-		
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		new rhit.SignUpPageController();
 	}
 
 	if(document.querySelector("#mapPage")) {
 		console.log("You are on the map page.")
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		const queryString = window.location.search;
 		const urlParams = new URLSearchParams(queryString);
 		const campaignId = urlParams.get("id");
@@ -708,12 +735,13 @@ rhit.main = function () {
 	}
 
 	if(document.querySelector("#homePage")) {
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		console.log("You are on the home page.")
 		new rhit.HomePageController();
 		
 	}
 	if(document.querySelector("#campaignPage")) {
-		
+		rhit.fbCampaignManager = new rhit.FbCampaignManager(); 
 		new rhit.CampaignPageController();
 		
 	}

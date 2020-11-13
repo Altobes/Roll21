@@ -181,6 +181,9 @@ rhit.MapPageController = class {
 
 		//Source: https://developer.mozilla.org/en-US/docs/Web/API/Document/drag_event
 		var dragged;
+		document.querySelector("#home").onclick = (event) => {
+			window.location.href = "/home.html"
+		};
 
 		document.addEventListener("dragstart", function(event) {
 			dragged = event.target;
@@ -410,14 +413,10 @@ rhit.FbChatManager = class {
 
 rhit.HomePageController = class {
 	constructor() {
-		document.querySelector("#friends").addEventListener = (event) => {
+
 		
-		};
 		document.querySelector("#campaigns").onclick = (event) => {
 			window.location.href = `/campaigns.html?`;
-		};
-		document.querySelector("#game").onclick = (event) => {
-			window.location.href = `/map.html?`;
 		};
 		document.querySelector("#logout-button").onclick = (event) => {
 			rhit.fbAuthManager.signOut();
@@ -428,15 +427,24 @@ rhit.HomePageController = class {
 		document.getElementById("campaignList").onchange = async (event) => {
 			const chosen = document.getElementById("campaignList").value;
 			console.log(chosen);
+			/*
 			await rhit.fbCampaignManager.selectCampaign(chosen);
-			
-			window.location.href = `/map.html?id=${rhit.fbCampaignManager.selected}`;
+			if (rhit.fbCampaignManager.selected == null) {
+				return;
+			}
+			*/
+			if (chosen == null) {
+				console.log("Empty")
+			}
+
+			window.location.href = `/map.html?id=${chosen}`;
 		}
+		this.updateList();
 		rhit.fbCampaignManager.beginListening(this.updateList.bind(this));
 	}
 
-	_createOption(camp) {
-		return htmlToElement(`<option value="${camp}">${camp}</option>`);
+	_createOption(camp, id) {
+		return htmlToElement(`<option value="${id}">${camp}</option>`);
 	}
 
 	updateList() {
@@ -450,7 +458,7 @@ rhit.HomePageController = class {
 			const cm = rhit.fbCampaignManager.getCampaignAt(i);
 			console.log(this.runThrough(i))
 			if (this.runThrough(i)) {
-				camp.appendChild(this._createOption(cm.name));
+				camp.appendChild(this._createOption(cm.name, cm.id));
 				continue;
 			}
 		}
@@ -459,6 +467,9 @@ rhit.HomePageController = class {
 	runThrough(i) {
 		const cm = rhit.fbCampaignManager.getCampaignAt(i);
 		let found = false;
+		if (firebase.auth().currentUser.displayName == null) {
+			setTimeout(3000);
+		}
 		cm.users.forEach(user => {
 			if (user == firebase.auth().currentUser.displayName) {
 				console.log("Should be true")
@@ -485,6 +496,10 @@ rhit.CampaignPageController = class {
 		$(function() {
 			$("form").submit(function() { return false; });
 		});
+
+		document.querySelector("#home").onclick = (event) => {
+			window.location.href = "/home.html"
+		};
 
 		document.querySelector("#createCampaign").onclick = (event) => {
 			const name = document.getElementById("campName").value;
@@ -723,6 +738,7 @@ rhit.FbCampaignManager = class {
 		}
 		
 	}
+
 
 	async addPlayer(player) {
 		let success = false;

@@ -442,48 +442,35 @@ rhit.HomePageController = class {
 	updateList() {
 		const camp = document.querySelector("#campaignList");
 		for (let i=0;i < rhit.fbCampaignManager.length;i++) {
-			let found = false;
 			const cm = rhit.fbCampaignManager.getCampaignAt(i);
-			cm.FB_USERS.forEach(user => {
-				if (user != firebase.auth().currentUser.displayName) {
-					continue;
-					found = true;
-					break;
-				}
-				if (found) {
-					camp.appendChild(this._createOption(cm.name));
-				}
-			})
-
-			}
-			if (cm.creator != rhit.fbAuthManager.uid) {
-				
+			console.log(this.runThrough(i))
+			if (this.runThrough(i)) {
+				camp.appendChild(this._createOption(cm.name));
 				continue;
 			}
-
-			
 		}
 	}
 
 	runThrough(i) {
 		const cm = rhit.fbCampaignManager.getCampaignAt(i);
-		cm.FB_USERS.forEach(user => {
-		if (user != firebase.auth().currentUser.displayName) {
-			continue;
-			found = true;
-			break;
-		}
-		if (found) {
-			camp.appendChild(this._createOption(cm.name));
-		}
+		let found = false;
+		cm.users.forEach(user => {
+			if (user == firebase.auth().currentUser.displayName) {
+				console.log("Should be true")
+				found = true;
+				return true;
+			}
+		})
+		return found;
 	}
 }
 
 rhit.Campaign = class {
-	constructor(id, name, creator) {
+	constructor(id, name, creator, users) {
 		this.id = id;
 		this.name = name;
 		this.creator = creator;
+		this.users = users
 	}
 }
 
@@ -591,7 +578,8 @@ rhit.FbCampaignManager = class {
 		const camp = new rhit.Campaign(
 			docSnapShot.id, 
 			docSnapShot.get(rhit.FB_NAME),
-			docSnapShot.get(rhit.FB_CREATOR)
+			docSnapShot.get(rhit.FB_CREATOR),
+			docSnapShot.get(rhit.FB_USERS)
 		);
 		return camp;
 	}
@@ -680,7 +668,6 @@ async function deleteStuff(email) {
 }
 
 rhit.checkForRedirect = function() {
-	console.log(rhit.fbAuthManager.isSigndIn);
 	if (document.querySelector("#loginPage") && rhit.fbAuthManager.isSigndIn) {
 		window.location.href = "/home.html";
 		

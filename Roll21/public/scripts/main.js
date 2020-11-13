@@ -506,13 +506,23 @@ rhit.CampaignPageController = class {
 			}
 		}
 
+		document.querySelectorAll(".pList").onclick = (event) => {
+			const name = document.getElementById("player").value;
+			
+			if (name.empty) {
+				console.error("Need name"); //Add prompt
+			} else {
+				rhit.fbCampaignManager.addPlayer(name);
+			}
+		}
+
 		document.getElementById("campaigns").onchange = async (event) => {
 			const camp = document.getElementById("campaigns").value;
 			if (camp.empty) {
 				console.error("Select Campaign"); //Add prompt
 			} else {
 				rhit.fbCampaignManager.selectCampaign(camp);
-				this.updatePlayerList();
+				this.updatePlayerList(camp);
 			}
 		}
 
@@ -544,18 +554,18 @@ rhit.CampaignPageController = class {
 		}
 	}
 
-	updatePlayerList() {
+	updatePlayerList(name) {
 		const list = document.querySelector("#playerList");
 		while (list.firstChild) {
 			list.removeChild(list.firstChild);
 		}
 
 		
-			const camp = document.querySelector("#campaignList");
-			const campaign = rhit.fbCampaignManager.getCampaignByName(camp);
+			const campaign = rhit.fbCampaignManager.getCampaignByName(name);
 			campaign.users.forEach(user => {
-				camp.appendChild(this._createOption(`<li>${user}</li>`));
+				list.appendChild(this._createOption(`<li class="pList">${user}</li>`));
 			})
+			/*
 			for (let i=0;i < rhit.fbCampaignManager.length;i++) {
 				const cm = rhit.fbCampaignManager.getCampaignAt(i);
 				console.log(this.runThrough(i))
@@ -564,6 +574,7 @@ rhit.CampaignPageController = class {
 					continue;
 				}
 			}
+			*/
 	}
 }
 
@@ -615,6 +626,7 @@ rhit.FbCampaignManager = class {
 
 	getCampaignByName(name) {
 		let index = -1;
+		console.log(name);
 		for (let i =0;i < this._documentSnapshots.length;i++) {
 			const docSnapShotA = this._documentSnapshots[i];
 			if (docSnapShotA.get(rhit.FB_NAME) == name) {

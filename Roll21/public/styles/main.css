@@ -62,7 +62,7 @@ body {
     /*justify-content: center;*/
    
     grid-template-rows: 10%;
-    width: 40vw;
+    width: 41vw;
     height: 40vw;
     gap:0px;
     overflow:scroll;

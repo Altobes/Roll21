@@ -39,12 +39,16 @@
     width: 50%;
     height: 100vh;
     margin: 0;
+    padding-left: 3%;
+    padding-right: 3%;
     float: left;
     border-right: 1px solid black;
   }
   #chooseExisting {
     width: 50%;
     margin: 0;
+    padding-left: 3%;
+    padding-right: 3%;
     float: left;
   }
   h1 {
@@ -53,6 +57,9 @@
   #createCampaign {
     position: absolute;
     margin: auto;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  }
+  button {
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   }
@@ -65,6 +72,7 @@
   <div id="campaignPage">
     <div id="createNew">
       <h1>Make a New Campaign</h1>
+      <br>
       <label for="campName">Campaign Name</label>
       <input type="text" id="campName" name="campName">
       <label for="player">Input Player Name:</label>
@@ -75,7 +83,7 @@
         <li>Name 1</li>
         <li>Name 2</li>
       </ul>
-      <button id="createCampaign">Create Campaign!</button>
+      <button id="createCampaign" class="btn-primary">Create Campaign!</button>
     </div>
     <div id="chooseExisting">
       <h1>Edit or Delete an Existing Campaign</h1>
@@ -89,8 +97,9 @@
         <label for="player2">Input Player Name:</label>
         <input type="text" id="player2" name="player2">
         <br>
-        <button id="add">Add Player</button>
-        <button id="delete">Delete Campaign</button>
+        <br>
+        <button id="add" class="btn-primary">Add Player</button>
+        <button id="delete" class="btn-warning" onclick="return confirm('Are you sure?');">Delete Campaign</button>
     </div>
   </div>
   <div style="clear: both;" > </div>

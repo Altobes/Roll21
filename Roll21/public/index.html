@@ -20,9 +20,8 @@
     <div class="left">
       <h1>Sign up</h1>
       
-      <input id="createUser" type="text" name="username" placeholder="Username"/>
-      <!--<input type="text" name="email" placeholder="E-mail"/>-->
-      <input id="createPassword" type="password" name="password" placeholder="Password"/>
+      <input id="createUser" oninvalid="alert('You must input valid username');" type="text" name="username" placeholder="Username"/>
+      <input id="createPassword" oninvalid="alert('You must input valid password');" type="password" name="password" placeholder="Password"/>
       <input id="verifyPassword" type="password" name="password2" placeholder="Retype password"/>
       
       <input id="signUp" type="submit" name="signup_submit" value="Sign me up"/>
@@ -40,8 +39,8 @@
   </div>
   <div id="login-box">
     <h1>Log in</h1>
-    <input id="inputUser" type="text" name="username" placeholder="Username"/>
-    <input id="inputPassword" type="password" name="password" placeholder="Password"/>
+    <input id="inputUser" oninvalid="alert('You must input valid username');" type="text" name="username" placeholder="Username"/>
+    <input id="inputPassword" oninvalid="alert('You must input valid password');" type="password" name="password" placeholder="Password"/>
     <input id="logIn" type="submit" name="signup_submit" value="Log in"/>
   </div>
 

@@ -26,7 +26,7 @@
     height: 500px;
     justify-content: center;
     margin-top: 200px;
-    
+    text-align: center;
   }
   #delete{
     margin-left: 42%;
@@ -47,6 +47,16 @@
     display: grid;
     grid-template-columns: auto auto;
   }
+
+  #campaigns {
+    background: url(/images/dragon.jpg) no-repeat;
+    color: white;
+  }
+
+  #campaignList {
+    background: url(/images/map.webp) no-repeat;
+    
+  }
 </style>
 
 
@@ -58,7 +68,7 @@
       <button class="btn btn-outline-danger" id="logout-button">Log Out</button>
     </div>
     <div class="grid-item">
-      <select name="campaignList" id="campaignList" class="list-group-item">Select Campaign</select>
+      <select name="campaignList" id="campaignList" class="list-group-item"></select>
       <button class="btn btn-outline-danger" id="delete">Delete Account</button>
     </div>
   </div>

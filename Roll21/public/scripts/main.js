@@ -50,6 +50,9 @@ rhit.LoginPageController = class {
 			}
 			rhit.fbAuthManager.createAccount(inputEmailEl.value, inputPasswordEl.value);
 		};
+
+		
+
 	}
 }
 
@@ -77,14 +80,13 @@ rhit.FbAuthManager = class {
 	signIn() {
 		const inputEmailEl = document.querySelector("#inputUser").value;
 		const inputPasswordEl = document.querySelector("#inputPassword").value;
-		firebase.auth().signInWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then(function () {
-			
+		firebase.auth().signInWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl)
+		.then( () => {	
 			window.location.href = `/home.html`;
-		}).catch = (error) => {
+		}).catch((error) => {
 			var errorCode = error.code;
-			var errorMessage = error.messgage;
-			console.log("sign in error", errorCode, errorMessage);
-		}
+			window.alert(errorCode);
+		})
 	}
 	signOut() {
 		firebase.auth().signOut().then(function () {
@@ -98,11 +100,10 @@ rhit.FbAuthManager = class {
 		firebase.auth().createUserWithEmailAndPassword(inputEmailEl + "@shmee.edu", inputPasswordEl).then((user) => {
 			this._newUser = true;
 			window.location.href = `/home.html`;
-		}).catch = (error) => {
+		}).catch((error) => {
 			var errorCode = error.code;
-			var errorMessage = error.messgage;
-			console.log("creation error", errorCode, errorMessage);
-		}
+			window.alert(errorCode);
+		})
 	}
 
 	async deleteAccount() {
@@ -220,18 +221,6 @@ rhit.MapPageController = class {
 			rhit.fbTokenManager.deleteToken();
 		};
 
-
-		
-
-		//Testing Code
-		
-		//this.addToken("https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU");
-		//document.getElementById(10).src = "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS9G6twYx6wf6mYqKkZ06hTaR4BPmR8k_02eA&usqp=CAU";
-		//document.getElementById(18).src = "https://wiki.teamfortress.com/w/images/thumb/d/d8/Engineer.png/375px-Engineer.png";
-		//document.getElementById(56).src = "https://img.favpng.com/15/24/12/team-fortress-2-engineering-taunting-science-png-favpng-3g9hvBzWy43XBAa9RWPJGGMpj.jpg";
-		//document.getElementById(70).src = "https://i.redd.it/i51xeosj0bc31.png";
-		
-		//dragElement(document.querySelectorAll(".columns"));	
 		rhit.fbTokenManager.beginListening(this.updateMap.bind(this));
 	}
 
@@ -251,25 +240,6 @@ rhit.MapPageController = class {
 
 		return;
 	}
-
-	
-	chat() {
-		const text = document.querySelector("#textBox").value;
-		db.collection("Campaigns").doc("Chat_Histry").collection("Chats").doc(chat).add({
-			Message: text,
-			Timestamp: new Date(),
-			UserID: fbAuthManager._user
-		})
-		.then(function(docRef) {
-			console.log("Chat sent succesfully");
-			let box = document.querySelector("#chatBox");
-			box.value = box.value + "/n" + text;
-		})
-		.catch(function(error) {
-			console.error("Error adding document: ", error);
-		});
-	}
-	
 
 	
 }
@@ -349,60 +319,6 @@ rhit.fbTokenManager = class {
 	}
 }
 
-rhit.Chat = class {
-	constructor(uid, text, time) {
-		this.sender = uid;
-		this.chat = text;
-		this.timestamp = time;
-	}
-}
-
-rhit.FbChatManager = class { 
-	constructor() {
-		console.log("You created ChatManager");
-		this._documentSnapshots = [];
-		this._ref = firebase.firestore().collection("Campaigns").doc("ChatHistory").collection("Chats");
-		this._unsubscribe = null;
-	}
-	add(uid, text) {
-		//console.log(url + " " + title);
-		this._ref.add({
-			[rhit.FB_UID]: url,
-			[rhit.FB_CHAT]: title,
-			[rhit.FB_KEY_LAST_TOUCHED]: firebase.firestore.Timestamp.now()
-		}) 
-		.then(function (docRef) {
-			console.log("Document written with ID: ", docRef.id);
-		})
-		.catch(function (error) {
-			console.log("Error adding document: ", error);
-		})
-	}
-	beginListening(changeListender) {
-		this._unsubscribe = this._ref
-			.orderBy(rhit.FB_KEY_LAST_TOUCHED, "desc")
-			.limit(50)
-			.onSnapshot((querySnapshot) => {
-			console.log("chat update");
-			this._documentSnapshots = querySnapshot.docs;
-			changeListender();
-		});
-	}
-	stopListening() {
-		this._unsubscribe ();
-	}
-	get length() {
-		return this._documentSnapshots.length;
-	}
-	getChatAtIndex(index) {
-		const docSnapShot = this._documentSnapshots[index];
-		const ch = new rhit.Chat(
-			docSnapShot.sender, 
-			docSnapShot.get(rhit.CHAT), 
-		);
-		return ch;
-	} 
-} 
 
 rhit.HomePageController = class {
 	constructor() {
@@ -420,12 +336,6 @@ rhit.HomePageController = class {
 		document.getElementById("campaignList").onchange = async (event) => {
 			const chosen = document.getElementById("campaignList").value;
 			console.log(chosen);
-			/*
-			await rhit.fbCampaignManager.selectCampaign(chosen);
-			if (rhit.fbCampaignManager.selected == null) {
-				return;
-			}
-			*/
 			if (chosen == null) {
 				console.log("Empty")
 			}
@@ -449,7 +359,6 @@ rhit.HomePageController = class {
 		camp.appendChild(htmlToElement("<option disabled selected value>Choose Campaign</option>"))
 		for (let i=0;i < rhit.fbCampaignManager.length;i++) {
 			const cm = rhit.fbCampaignManager.getCampaignAt(i);
-			console.log(this.runThrough(i))
 			if (this.runThrough(i)) {
 				camp.appendChild(this._createOption(cm.name, cm.id));
 				continue;
@@ -465,7 +374,6 @@ rhit.HomePageController = class {
 		}
 		cm.users.forEach(user => {
 			if (user == firebase.auth().currentUser.displayName) {
-				console.log("Should be true")
 				found = true;
 				return true;
 			}

@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
   <link rel="stylesheet" href="styles/bootstrap-material-design.min.css">
   <link rel="stylesheet" href="styles/main.css">
+  <link rel="manifest"   href="manifest.json">
+  
   <title>Roll21</title>
 </head>
 
@@ -66,13 +68,6 @@
         </div>
         
       </div>
-      <div id="chat">
-        <textarea readonly id="chatBox" name="Chat">
-        </textarea>
-        <textarea id="textBox">
-        </textarea>
-        <button id="sendButton">Send</button>
-      </div>       
     </div>
     <div id="start" class="starter">
       <img alt="&nbsp;" id="starter" class="aBox" draggable="true" ondragstart="event.dataTransfer.setData('text',src)" onerror='this.style.display = "none"' style="display: none" onload="this.style.display=''">
@@ -94,6 +89,7 @@
   <script src="scripts/popper.js"></script>
   <script src="scripts/bootstrap-material-design.js"></script>
   <script>$("body").bootstrapMaterialDesign();</script>
+  <script src="scripts/DragDropTouch.js"></script>
   <script src="/__/firebase/7.18.0/firebase-app.js"></script>
   <script src="/__/firebase/7.18.0/firebase-analytics.js"></script>
   <script src="/__/firebase/7.18.0/firebase-auth.js"></script>

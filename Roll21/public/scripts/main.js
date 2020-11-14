@@ -221,13 +221,6 @@ rhit.MapPageController = class {
 		};
 
 
-		document.querySelector("#textBox").addEventListener = (event) => {
-			
-		};
-		document.querySelector("#sendButton").onclick = (event) => {
-			this.chat();
-		};
-
 		
 
 		//Testing Code

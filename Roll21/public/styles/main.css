@@ -70,8 +70,8 @@ body {
     /*justify-content: center;*/
    
     grid-template-rows: 10%;
-    width: 41vw;
-    height: 40vw;
+    width: 56vw;
+    height: 50vw;
     gap:0px;
     overflow:scroll;
 
@@ -94,8 +94,8 @@ body {
     display: inline;
     background-color: white;
     border: 2px solid black;
-    width: 4vw;
-    height: 4vw;
+    width: 5vw;
+    height: 5vw;
     margin: 0px;
 }
 
@@ -106,20 +106,7 @@ body {
 
 }
 
-/*Begin Code From https://bootsnipp.com/snippets/6XlB5 */
-#chat {
-   
-}
 
-#chatBox {
-    width: 20vw;
-    height: 85%;
-}
-
-#typeBox {
-    width: 20vw;
-    height: 15%;
-}
 
 img {
     width: 100%;
@@ -146,10 +133,3 @@ button{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
-/*
-@media (min-width: 1000px) {
-    #map {
-        width:1000px;
-        height: 1000px;
-    }
-} */

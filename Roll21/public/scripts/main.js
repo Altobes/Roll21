@@ -299,7 +299,7 @@ rhit.fbTokenManager = class {
 				this._ref.doc(doc.id).delete();
 			});
 			console.log("Token Deleted");
-			document.getElementById("#starter").src = "";
+			document.getElementById("starter").src = "";
 		}
 	}
 
